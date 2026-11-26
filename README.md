@@ -1,6 +1,6 @@
 # sismoclean — Pipeline de Filtrado Digital y Veto Multi-Estación
 
-Sistema de adquisición continua, filtrado digital causal, detección STA/LTA y discriminación multi-estación para monitoreo sísmico en entornos de laboratorio, desarrollado dentro del paquete de trabajo WP2 (FabLabs) del proyecto EL-BONGO Physics.
+Sistema de adquisición continua, filtrado digital causal, detección STA/LTA y discriminación multi-estación para monitoreo sísmico en entornos de laboratorio, desarrollado en la Universidad San Francisco de Quito (USFQ).
 
 ---
 
@@ -10,8 +10,7 @@ Sistema de adquisición continua, filtrado digital causal, detección STA/LTA y 
 - **Programa:** Pregrado en Física
 - **Institución:** Universidad San Francisco de Quito (USFQ)
 - **Contacto:** jfcarrerah@estud.usfq.edu.ec
-- **Consorcio:** EL-BONGO Physics — WP2 FabLabs
-- **Repositorio de consolidación:** https://gitmilab.redclara.net/el-bongo/wp2fablabs
+- **Repositorio oficial:** https://github.com/jcarreraheredia/sismoclean
 
 ---
 
@@ -61,10 +60,10 @@ El procesamiento de señales sigue un ciclo continuo compuesto por las siguiente
 
 ## 3. Estructura del Repositorio
 
-El contenido cumple con la nomenclatura estandarizada por el proyecto EL-BONGO Physics:
+El contenido se organiza bajo la siguiente estructura modular:
 
 ```text
-sismografo-elbongo/
+sismoclean/
 ├── README.md               # Este documento de presentación y guía técnica
 ├── .gitignore              # Reglas de exclusión para control de versiones git
 ├── docs/                   # Documentación técnica, manuales y poster científico
@@ -111,8 +110,8 @@ sismografo-elbongo/
 
 ### Paso 1: Clonar el repositorio y entrar al directorio de software
 ```bash
-git clone https://gitmilab.redclara.net/el-bongo/wp2fablabs.git
-cd sismografo-elbongo/software
+git clone https://github.com/jcarreraheredia/sismoclean.git
+cd sismoclean/software
 ```
 
 ### Paso 2: Crear el entorno virtual e instalar dependencias
@@ -225,6 +224,6 @@ phasenet:
 
 ## 7. Licencia y Créditos
 
-Este trabajo forma parte de los entregables de desarrollo e instrumentación científica del proyecto **EL-BONGO Physics (WP2 FabLabs)**.
+Desarrollo realizado en el Departamento de Física de la Universidad San Francisco de Quito (USFQ).
 
 Cualquier consulta sobre la reproducción de este sistema o adaptación a otras estaciones puede dirigirse al autor o consultarse en las guías técnicas dentro de la carpeta `docs/`.

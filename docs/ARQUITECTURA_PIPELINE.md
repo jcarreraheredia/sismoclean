@@ -1,6 +1,6 @@
 # Arquitectura del Pipeline Sísmico
 
-Este documento detalla el diseño técnico y el flujo de procesamiento de señales del sistema de monitoreo sísmico para la estación RE626 (Raspberry Shake 4D), desarrollado en el marco del proyecto EL-BONGO (WP2 FabLabs).
+Este documento detalla el diseño técnico y el flujo de procesamiento de señales del sistema de monitoreo sísmico para la estación RE626 (Raspberry Shake 4D), desarrollado en la Universidad San Francisco de Quito (USFQ).
 
 ## 1. Vision General del Sistema
 

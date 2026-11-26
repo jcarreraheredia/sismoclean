@@ -21,8 +21,8 @@ sudo apt install -y python3 python3-pip python3-venv chrony netcat-openbsd curl
 
 1. Clonar o copiar el repositorio en el equipo host:
 ```bash
-git clone https://gitmilab.redclara.net/el-bongo/wp2fablabs.git
-cd sismografo-elbongo/software
+git clone https://github.com/jcarreraheredia/sismoclean.git
+cd sismoclean/software
 ```
 
 2. Crear y activar un entorno virtual de Python:
