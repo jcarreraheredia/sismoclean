@@ -1,4 +1,4 @@
-# Estación Sismológica RE626 — Proyecto EL-BONGO (WP2 FabLabs)
+# sismoclean — Pipeline de Filtrado Digital y Veto Multi-Estación
 
 Sistema de adquisición continua, filtrado digital causal, detección STA/LTA y discriminación multi-estación para monitoreo sísmico en entornos de laboratorio, desarrollado dentro del paquete de trabajo WP2 (FabLabs) del proyecto EL-BONGO Physics.
 
