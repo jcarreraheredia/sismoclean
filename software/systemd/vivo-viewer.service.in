@@ -1,0 +1,35 @@
+[Unit]
+Description=vivo-v5 · visor HTML local
+Documentation=file:@DIR@/README.md
+After=network-online.target vivo-v5.service
+Wants=vivo-v5.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@DIR@
+ExecStart=/bin/bash @DIR@/run.sh viewer --host 127.0.0.1 --port 8080
+Restart=always
+RestartSec=10
+TimeoutStopSec=10
+KillSignal=SIGTERM
+Environment=PYTHONUNBUFFERED=1
+UMask=0027
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths="@DIR@/viewer/data"
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

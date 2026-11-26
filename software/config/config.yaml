@@ -1,0 +1,81 @@
+# Configuración activa. Puedes editarla o ejecutar ./run.sh setup
+# para cambiar la IP del Shake sin tocar el resto.
+station:
+  network: "AM"
+  station: "RE626"
+  location: "00"
+  channels: ["EHZ", "ENE", "ENN", "ENZ"]
+  fs: 100.0
+  sensitivities:
+    EHZ: 399650000.0
+    ENE: 384500.0
+    ENN: 384500.0
+    ENZ: 384500.0
+
+cluster:
+  - {network: "AM", station: "R2A1F", location: "00"}
+  - {network: "AM", station: "R53D1", location: "00"}
+
+seedlink:
+  host: "rs.local"
+  port: 18000
+  timeout_s: 20
+
+fdsn:
+  base: "https://data.raspberryshake.org/fdsnws"
+  verify_ssl: false
+  timeout_s: 60
+  retries: 4
+
+tiempos:
+  bloque_s: 30
+  margen_s: 30
+  atraso_fdsn_s: 4200
+  poll_confirm_s: 60
+  max_attempts: 12
+  max_wait_h: 8
+  retry_backoff_s: [300, 900, 1800, 3600, 7200]
+
+deteccion:
+  highpass: 0.7
+  notch: [29.79, 18.07, 42.24]
+  notch_q: 30
+  orden_hp: 2
+  banda: [2.0, 20.0]
+  orden_bp: 4
+  sta_s: 1.0
+  lta_s: 20.0
+  umbrales:
+    RE626: {on: 3.2, off: 1.4}
+    R2A1F: {on: 2.8, off: 1.2}
+    R53D1: {on: 3.5, off: 1.5}
+  provisional_on: 3.5
+  provisional_off: 1.5
+  tol_onset_s: 5.0
+  pad_solape_s: 2.0
+
+phasenet:
+  enabled: true
+  mode: "compare"
+  threshold: 0.15
+  half_window_s: 15.0
+  model: "original"
+  cache_dir: "vendor/models"
+  compare_stations: ["R53D1"]
+
+traces:
+  pre_s: 10.0
+  post_s: 20.0
+  raw: true
+  live_minutes: 5.0
+
+paths:
+  data_dir: "viewer/data"
+  viewer_dir: "viewer"
+  fixture_dir: "tests/fixtures"
+  log_dir: "logs"
+
+retention:
+  trace_days: 30
+  raw_trace_days: 7
+  viewer_events: 1000

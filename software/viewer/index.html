@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>vivo-v5 · RE626</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <div>
+        <h1>vivo-v5</h1>
+        <p>RE626 · 4 canales · confirmación FDSN 70 min</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge" id="liveBadge">VIVO —</span>
+      <span class="badge" id="eventBadge">0 eventos</span>
+      <span class="badge" id="pendingBadge">0 pendientes</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Vistas">
+    <button class="tab active" data-tab="live" type="button">Vivo</button>
+    <button class="tab" data-tab="events" type="button">Eventos</button>
+    <span class="spacer"></span>
+    <span class="hint" id="clock">UTC —</span>
+  </nav>
+
+  <main>
+    <section id="view-live" class="view active">
+      <div class="toolbar">
+        <label>Ventana
+          <select id="liveWindow">
+            <option value="1">1 min</option>
+            <option value="5" selected>5 min</option>
+            <option value="10">10 min</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" data-live-ch="EHZ" checked> EHZ</label>
+        <label class="check"><input type="checkbox" data-live-ch="ENE" checked> ENE</label>
+        <label class="check"><input type="checkbox" data-live-ch="ENN" checked> ENN</label>
+        <label class="check"><input type="checkbox" data-live-ch="ENZ" checked> ENZ</label>
+        <span class="spacer"></span>
+        <span class="hint" id="liveUpdated">sin datos todavía</span>
+      </div>
+      <div class="plot-card">
+        <canvas id="liveCanvas" aria-label="Últimos minutos de los 4 canales"></canvas>
+        <div class="empty" id="liveEmpty">Esperando el primer bloque del Shake…</div>
+      </div>
+      <div class="legend" id="liveLegend"></div>
+      <p class="note">Vista de los últimos minutos, solo señales procesadas. No se guarda la onda continua: el archivo <code>live.csv</code> se reemplaza en cada bloque.</p>
+    </section>
+
+    <section id="view-events" class="view">
+      <div class="events-layout">
+        <aside class="event-list-wrap">
+          <div class="toolbar wrap">
+            <label>Estado
+              <select id="statusFilter">
+                <option value="all">Todos</option>
+                <option value="KEPT">KEPT</option>
+                <option value="VETO_CONFIRMADO">VETO</option>
+                <option value="PENDIENTE">Pendientes</option>
+                <option value="PROVISIONAL">Provisional</option>
+                <option value="SIN_DATOS">Sin datos</option>
+              </select>
+            </label>
+            <button id="refreshEvents" class="button" type="button">Actualizar</button>
+          </div>
+          <div class="table-wrap">
+            <table class="event-table">
+              <thead><tr><th>UTC onset</th><th>Estado</th><th>P</th><th>S</th><th>Alerta</th></tr></thead>
+              <tbody id="eventRows"></tbody>
+            </table>
+            <div class="empty" id="eventsEmpty">Todavía no hay eventos. El detector está esperando.</div>
+          </div>
+        </aside>
+
+        <article class="detail">
+          <div class="detail-head">
+            <div>
+              <h2 id="detailTitle">Selecciona un evento</h2>
+              <p id="detailMeta" class="hint">Haz clic en una fila de la izquierda.</p>
+            </div>
+            <div id="detailLinks" class="links"></div>
+          </div>
+          <div class="toolbar" id="detailToolbar" hidden>
+            <div class="stations" id="stationButtons" role="group" aria-label="Estación"></div>
+            <span class="spacer"></span>
+            <label class="check"><input type="checkbox" data-detail-ch="EHZ" checked> EHZ</label>
+            <label class="check"><input type="checkbox" data-detail-ch="ENE" checked> ENE</label>
+            <label class="check"><input type="checkbox" data-detail-ch="ENN" checked> ENN</label>
+            <label class="check"><input type="checkbox" data-detail-ch="ENZ" checked> ENZ</label>
+          </div>
+          <div class="plot-card detail-plot">
+            <canvas id="eventCanvas" aria-label="Trazas procesadas del evento"></canvas>
+            <div class="empty" id="eventEmpty">Sin traza seleccionada.</div>
+          </div>
+          <div class="legend" id="eventLegend"></div>
+          <div class="detail-grid">
+            <div class="panel">
+              <h3>Resumen</h3>
+              <dl id="eventSummary"></dl>
+            </div>
+            <div class="panel">
+              <h3>Canales (Fragmento)</h3>
+              <table class="mini-table">
+                <thead><tr><th>Canal</th><th>Pico</th><th>RMS</th><th>SNR</th><th>Gap</th></tr></thead>
+                <tbody id="channelRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="note">Las trazas de evento son ventanas de 10 s antes / 20 s después, procesadas y convertidas a unidades físicas. Marcadores: onset (amarillo), P (cian), S (magenta).</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>vivo-v5</span>
+    <span>·</span>
+    <span>CSV local</span>
+    <span>·</span>
+    <span>127.0.0.1</span>
+    <span>·</span>
+    <span id="footerHealth">—</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

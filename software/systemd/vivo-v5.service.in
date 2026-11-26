@@ -1,0 +1,36 @@
+[Unit]
+Description=vivo-v5 · pipeline sísmico RE626 24/7
+Documentation=file:@DIR@/README.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@DIR@
+ExecStart=/bin/bash @DIR@/run.sh live
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+KillSignal=SIGTERM
+Environment=PYTHONUNBUFFERED=1
+UMask=0027
+
+# Endurecimiento sin impedir el acceso a la LAN ni a los CSV.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths="@DIR@/viewer/data" "@DIR@/logs"
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

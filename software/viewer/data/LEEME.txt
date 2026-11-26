@@ -1,0 +1,12 @@
+Esta carpeta la escribe vivo-v5. No borres `eventos.csv`, `canales.csv` ni `trazas/`
+mientras el servicio esté corriendo.
+
+Archivos generados:
+  eventos.csv
+  eventos_historial.csv
+  canales.csv
+  bloques.csv
+  health.csv
+  live.csv
+  trazas/       (CSV procesados)
+  trazas_raw/   (CSV crudos .gz opcionales)
