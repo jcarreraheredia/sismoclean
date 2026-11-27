@@ -20,13 +20,11 @@ Comparativa fundamental del mecanismo de veto multi-estación:
 - Columna izquierda (Sismo Real Confirmado): El evento genera un disparo en RE626 y es registrado de manera coherente en las estaciones de referencia R53D1 (a 6.3 km) y R2A1F (a 1.0 km), clasificándose como KEPT.
 - Columna derecha (Ruido Local Vetado): Un transitorio de alta energía (pisada o vibración de laboratorio) activa el detector en RE626, pero las estaciones de referencia permanecen en silencio. El sistema clasifica el evento como VETO y descarta la falsa alarma.
 
-## 2. Esquemas Técnicos y Arquitectura
+## 2. Esquemas Técnicos y Validación
 
 - `fig_confirmation.png`: Balance estadístico de eventos confirmados mediante el clúster sismológico.
 - `fig_timeline.png`: Continuidad temporal de adquisición y control de paquetes en bloques de 30 segundos.
 - `fig_status.png`: Distribución porcentual entre eventos vetados (ruido local), pendientes de validación y sismos confirmados.
-- `fig_cosmicwatch_hw.png`: Diagrama de instrumentación y flujo de acondicionamiento de señales.
-- `fig_munhub_flow.png`: Arquitectura de enlace y consulta de series de datos.
 
 ## 3. Registro Fotográfico del Montaje
 
