@@ -1,5 +1,7 @@
 # Dependencias fijadas para Python 3.11 / Linux x86_64.
-# El paquete incluye estas ruedas en vendor/wheels para instalar sin red.
+# Nota: La rueda torch==2.2.2+cpu requiere el índice oficial de PyTorch:
+#   pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+# Este repositorio no incluye vendor/wheels; la instalación se realiza desde Internet.
 numpy==1.26.4
 scipy==1.13.1
 pandas==2.2.3

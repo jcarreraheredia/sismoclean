@@ -22,9 +22,9 @@ El sistema se compone de cinco etapas fundamentales:
              │
              ▼ (Bloques de 30 s)
    [Filtrado Digital Causal]
-   - High-Pass (0.7 Hz)
-   - Notch IIR (18.07 Hz, Q=30)
-   - Band-Pass (2.0 - 20.0 Hz)
+   - High-Pass (0.7 Hz, orden 2)
+   - Cascada Notch IIR ([29.79, 18.07, 42.24] Hz, Q=30)
+   - Band-Pass (2.0 - 20.0 Hz, orden 4)
              │
              ▼
    [Detector STA/LTA (Canal EHZ)]
@@ -77,10 +77,13 @@ Para preservar la causalidad temporal y evitar precursores artificiales previos 
    - Tipo: Butterworth orden 2.
    - Proposito: Eliminar la deriva de continua (offset DC) y tendencias de baja frecuencia.
 
-2. Filtro Rechazo de Banda (Notch IIR):
-   - Frecuencia central: 18.07 Hz.
-   - Factor de calidad: Q = 30 (ancho de banda aproximado de 0.60 Hz).
-   - Proposito: Suprimir una linea de vibracion mecanica persistente propia del entorno de instalacion.
+2. Filtros de Rechazo de Banda (Notch IIR en cascada):
+   - Frecuencias configuradas (`deteccion.notch`): [29.79, 18.07, 42.24] Hz.
+   - Factor de calidad (`deteccion.notch_q`): Q = 30 para cada sección de segundo orden (SOS).
+   - Implementación: Se calcula una sección SOS por cada frecuencia mediante `scipy.signal.iirnotch` y `tf2sos`, aplicándolas en serie en `Filters._apply`.
+   - Propósito:
+     - 18.07 Hz: Suprime la resonancia mecánica estructural principal identificada dentro de la banda de paso sísmica.
+     - 29.79 Hz y 42.24 Hz: Suprimen líneas espectrales de alta frecuencia identificadas en el mapa de ruido ambiental del sitio.
 
 3. Filtro Paso-Banda (Band-Pass):
    - Rango de frecuencias: 2.0 Hz a 20.0 Hz.

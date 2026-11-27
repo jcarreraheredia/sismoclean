@@ -1,6 +1,8 @@
 # sismoclean — Pipeline de Filtrado Digital y Veto Multi-Estación
 
-Sistema de adquisición continua, filtrado digital causal, detección STA/LTA y discriminación multi-estación para monitoreo sísmico en entornos de laboratorio, desarrollado en la Universidad San Francisco de Quito (USFQ).
+Entregable WP2 FabLabs – EL-BONGO Physics
+
+sismoclean es un pipeline de procesamiento sísmico diseñado para estaciones Raspberry Shake 4D (estación RE626) operando en entornos con alto nivel de ruido antropogénico. Adquiere señales continuamente por red local vía SeedLink, aplica filtrado digital causal para suprimir ruido instrumental y resonancias mecánicas, detecta arribos mediante STA/LTA y valida cada disparo mediante un esquema de veto multi-estación diferido contra estaciones de referencia FDSN, descartando falsas alarmas locales y clasificando eventos confirmados con PhaseNet.
 
 ---
 
@@ -39,7 +41,7 @@ El procesamiento de señales sigue un ciclo continuo compuesto por las siguiente
 2. **Acondicionamiento y filtrado causal:**
    Cada bloque de señal (30 segundos) pasa por:
    - Filtro Paso-Alto (0.7 Hz, Butterworth orden 2): suprime la deriva de continua (offset DC).
-   - Filtro Rechazo de Banda Notch (18.07 Hz, Q = 30): elimina una vibración mecánica resonante propia del edificio del laboratorio.
+   - Cascada de Filtros Rechazo de Banda Notch (`deteccion.notch: [29.79, 18.07, 42.24]` Hz, Q = 30): `signal.py` aplica en cascada tres filtros notch IIR de segundo orden para eliminar la resonancia mecánica estructural principal del laboratorio (18.07 Hz) y componentes parásitas de alta frecuencia (29.79 Hz y 42.24 Hz).
    - Filtro Paso-Banda (2.0 a 20.0 Hz, Butterworth orden 4): concentra la energía en el rango típico de sismos locales y regionales.
 
 3. **Detección STA/LTA (onda P en canal EHZ):**
@@ -66,10 +68,9 @@ El contenido se organiza bajo la siguiente estructura modular:
 sismoclean/
 ├── README.md               # Este documento de presentación y guía técnica
 ├── .gitignore              # Reglas de exclusión para control de versiones git
-├── docs/                   # Documentación técnica, manuales y poster científico
+├── docs/                   # Documentación técnica, manuales y arquitectura
 │   ├── ARQUITECTURA_PIPELINE.md
-│   ├── MANUAL_OPERATIVO.md
-│   └── poster_cientifico_sismografo.pdf
+│   └── MANUAL_OPERATIVO.md
 ├── data/                   # Muestras de datos experimentales
 │   ├── raw/                # Trazas crudas en formato estándar MiniSEED (.mseed)
 │   ├── processed/          # Series de tiempo y registros de eventos en formato CSV
@@ -86,7 +87,7 @@ sismoclean/
 ├── hardware/               # Especificaciones mecánicas, sensores y base de montaje
 │   ├── README.md
 │   └── cad_3d/             # Carpeta de reserva para futuros diseños CAD y piezas 3D
-├── results/                # Figuras de validación, curvas de rendimiento y póster
+├── results/                # Figuras de validación y curvas de rendimiento
 │   ├── fig_kept_waveform.png
 │   ├── fig_veto_waveforms.png
 │   ├── fig_timeline.png
@@ -118,42 +119,66 @@ cd sismoclean/software
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+
+# Instalar PyTorch CPU desde el repositorio oficial de PyTorch (requerido para resolver torch==2.2.2+cpu)
+pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+
+# Instalar las dependencias restantes
 pip install -r requirements.txt
 ```
 
-### Paso 3: Diagnosticar la conectividad de red
-Ejecute el script de diagnóstico indicando la IP de su Raspberry Shake:
-```bash
-bash scripts/diagnostico_red.sh 192.168.1.50
-```
-El diagnóstico confirmará si el puerto SeedLink local (18000) responde y si hay salida HTTPS (puerto 443) hacia los servidores FDSN.
+> **Aclaración sobre `install.sh`:** El instalador `./install.sh` está diseñado para paquetes autocontenidos offline que asumen la presencia de carpetas locales `.python/` y `vendor/wheels/`. Al clonar este repositorio desde Git, dichos binarios pesados no están incluidos. Si se ejecuta `install.sh`, este detectará la ausencia del directorio de ruedas e intentará instalar desde Internet, pero fallará al no resolver `torch==2.2.2+cpu` en el índice estándar de PyPI si no se preinstala con `--index-url https://download.pytorch.org/whl/cpu`. Además, `install.sh` ejecuta al final una prueba de replay offline (`tests/fixtures/hour1_*.mseed`) que no está incluida en este repositorio. Por tanto, se recomienda la instalación manual mediante `venv` + `pip`.
 
-### Paso 4: Configurar los parámetros de la estación
-Abra el archivo `software/config/config.yaml` y asigne la IP de su estación en la sección `seedlink`:
-```yaml
-seedlink:
-  host: "192.168.1.50"   # Cambiar por la IP real o nombre rs.local de su Shake
-  port: 18000
+### Paso 3: Configurar la IP del Raspberry Shake
+Configure la dirección IP asignada a su estación en la red local:
+```bash
+./run.sh setup --host 192.168.1.50
+```
+*(También puede ejecutarse `./run.sh setup` sin argumentos para ingresar interactivamente la IP y puerto).*
+
+### Paso 4: Comprobar la instalación (Preflight)
+Valide que las dependencias, configuración y rutas estén operativas:
+```bash
+./run.sh preflight
+```
+Opciones:
+- `./run.sh preflight --online`: Comprueba adicionalmente la conexión en vivo con SeedLink y FDSN.
+- `./run.sh preflight --phase`: Prueba la carga del modelo PhaseNet.
+*(Nota: la opción `--replay` requiere trazas de prueba en `tests/fixtures/hour1_*.mseed` que no se incluyen en este repositorio).*
+
+### Paso 5: Probar enlaces de datos
+Pruebe la recepción de paquetes en red local (SeedLink, 10 segundos):
+```bash
+./run.sh lan-check
+```
+Pruebe la conectividad hacia los servidores FDSN con ventana de retraso (70 min = 4200 s):
+```bash
+./run.sh fdsn-check
 ```
 
-### Paso 5: Ejecutar una prueba offline de validación
-Para verificar que el filtrado y detección funcionan correctamente sin necesidad del sensor activo:
+### Paso 6: Ejecutar en producción 24/7 (Modo Híbrido)
+Inicie el bucle de adquisición continua LAN con confirmación diferida FDSN:
 ```bash
-python3 -m vivo.cli --modo sim --sim-tag ev_local_close_M45_20260915
+./run.sh live
 ```
+Banderas opcionales de `./run.sh live`:
+- `--duration-min <MIN>`: Detiene el bucle tras los minutos indicados (útil para pruebas).
+- `--max-bloques <N>`: Procesa un número límite de bloques de 30 segundos.
+- `--no-phasenet`: Desactiva la inferencia de PhaseNet.
+- `--fresh`: Borra CSVs y trazas previas antes de comenzar.
 
-### Paso 6: Ejecutar en producción (24/7)
-Para arrancar el monitoreo continuo con confirmación multi-estación:
+### Paso 7: Abrir el Visor Web Local
+Inicie el servidor web local para visualizar la señal en tiempo real:
 ```bash
-python3 -m vivo.cli --modo hibrido --shake-ip 192.168.1.50 --atraso 4200
+./run.sh viewer
 ```
+Abra en su navegador: `http://127.0.0.1:8080/`
 
-### Paso 7: Abrir el Visor Web
-En una terminal separada, inicie el visualizador:
+### Paso 8: Consultar el estado y salud del sistema
+En cualquier momento puede consultar el resumen de eventos y métricas de salud:
 ```bash
-python3 -m http.server 8080 --directory viewer
+./run.sh status
 ```
-Abra en su navegador: `http://127.0.0.1:8080`
 
 ---
 

@@ -26,9 +26,6 @@ Distribución de estados del conjunto de alertas auditadas:
 - Proporción de eventos vetados por monostación (ruido local).
 - Proporción de eventos confirmados por coincidencia multi-estación.
 
-### poster_v7_1.png
-Versión gráfica completa del póster científico presentado para el proyecto, detallando la instrumentación, modelos físicos y validación estadística.
-
 ## 2. Métricas Clave de Desempeño
 
 Durante las sesiones de auditoría y prueba continua del pipeline:

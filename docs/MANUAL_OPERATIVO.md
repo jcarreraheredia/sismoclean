@@ -32,35 +32,47 @@ source .venv/bin/activate
 ```
 
 3. Instalar las dependencias de Python:
+La rueda de `torch==2.2.2+cpu` no está alojada directamente en el índice estándar de PyPI, por lo que debe instalarse indicando el repositorio de PyTorch antes del archivo de requerimientos:
 ```bash
+pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
 
-Las dependencias principales incluyen `obspy`, `numpy`, `scipy`, `pyyaml`, `pandas`, `requests` y opcionalmente `torch` y `seisbench` si se utiliza el clasificador PhaseNet.
+> **Nota sobre `install.sh`:** El script `install.sh` está diseñado para paquetes autocontenidos offline que asumen carpetas locales (`vendor/wheels/` y `.python/`). Al clonar este repositorio desde Git, dichos binarios pesados no están incluidos. Si se ejecuta `install.sh`, este detectará la ausencia del wheelhouse e intentará instalar dependencias desde Internet, pero la descarga directa de `torch==2.2.2+cpu` fallará en PyPI sin la bandera `--index-url` indicada arriba, y la prueba final de replay requerirá fixtures no incluidas. Por ello, se recomienda la instalación manual con `venv` y `pip`.
 
 ## 3. Configuración de la Red y de la Estación
 
-El archivo de configuración principal se ubica en `software/config/config.yaml`.
+El archivo de configuración principal se ubica en `software/config/config.yaml`. También puede configurarse interactivamente o mediante banderas ejecutando `./run.sh setup --host <IP_DEL_SHAKE>`.
 
 ### Parámetros Esenciales
 ```yaml
 station:
-  name: "RE626"
+  network: "AM"
+  station: "RE626"
+  location: "00"
+  channels: ["EHZ", "ENE", "ENN", "ENZ"]
   fs: 100.0
 
 seedlink:
-  host: "192.168.1.50"   # Dirección IP local de la Raspberry Shake
+  host: "192.168.1.50"   # Dirección IP local de la Raspberry Shake (o rs.local)
   port: 18000
+  timeout_s: 20
 
 fdsn:
-  timeout: 15.0
-  verify_ssl: false      # Requerido debido a la expiración del certificado de data.raspberryshake.org
+  base: "https://data.raspberryshake.org/fdsnws"
+  verify_ssl: false      # Requerido debido a la expiración del certificado TLS de data.raspberryshake.org
+  timeout_s: 60
+  retries: 4
 
 tiempos:
   bloque_s: 30
+  margen_s: 30
   atraso_fdsn_s: 4200    # 70 minutos para compensar latencia de archivo FDSN
-  tolerancia_s: 5.0
-  solape_s: 2.0
+  poll_confirm_s: 60
+
+deteccion:
+  tol_onset_s: 5.0      # Tolerancia de tiempo de arribo para veto multi-estación
+  pad_solape_s: 2.0     # Margen de solape temporal entre trazas
 ```
 
 ### Comprobación de Conectividad
@@ -77,33 +89,68 @@ Resultado esperado:
 
 ## 4. Modos de Ejecución
 
-### Modo Simulación / Prueba Offline
-Permite validar toda la cadena de filtrado y detección utilizando trazas históricas almacenadas:
+Todos los subcomandos se ejecutan a través de `./run.sh`, el cual configura automáticamente el entorno de ejecución y `PYTHONPATH`.
 
+### Configuración de la IP de la estación
+Establece la IP de la estación en `config/config.yaml`:
 ```bash
-python3 -m vivo.cli --modo sim --sim-tag ev_local_close_M45_20260915
+./run.sh setup --host 192.168.1.50
 ```
 
-### Modo Local (Solo LAN)
-Adquiere datos de la estación en tiempo real y ejecuta detección STA/LTA sin consulta a FDSN:
-
+### Comprobación de dependencias (Preflight)
+Verifica que las librerías, configuración y rutas estén listas:
 ```bash
-python3 -m vivo.cli --modo solo-lan --shake-ip 192.168.1.50
+./run.sh preflight
+```
+Opciones adicionales:
+- `./run.sh preflight --online`: Comprueba adicionalmente la conectividad activa hacia SeedLink y FDSN.
+- `./run.sh preflight --phase`: Evalúa la carga del modelo PhaseNet con un evento de prueba.
+
+### Diagnóstico de enlace local SeedLink
+Captura paquetes durante 10 segundos para verificar la recepción de los 4 canales:
+```bash
+./run.sh lan-check
+# Opcional: especificar duración en segundos
+./run.sh lan-check --seconds 15
 ```
 
-### Modo Híbrido (Producción 24/7)
-Adquiere datos locales en tiempo real, genera alertas provisionales inmediatas y ejecuta el veto multi-estación tras la ventana de 70 minutos:
-
+### Diagnóstico de consultas FDSN
+Descarga trazas de archivo con la ventana de retraso configurada (70 minutos por defecto):
 ```bash
-python3 -m vivo.cli --modo hibrido --shake-ip 192.168.1.50 --atraso 4200
+./run.sh fdsn-check
+# Opcional: especificar retraso en segundos
+./run.sh fdsn-check --atraso 4200
 ```
+
+### Monitoreo continuo 24/7 (Modo Híbrido en Producción)
+Inicia el bucle de adquisición continua LAN con confirmación multi-estación diferida por FDSN:
+```bash
+./run.sh live
+```
+Banderas opcionales de `./run.sh live`:
+- `--duration-min <MIN>`: Detiene la ejecución tras un número determinado de minutos (útil para pruebas controladas).
+- `--max-bloques <N>`: Procesa un número máximo de bloques de 30 segundos y finaliza.
+- `--no-phasenet`: Desactiva la inferencia de PhaseNet en CPU.
+- `--fresh`: Limpia los archivos CSV y trazas generadas antes de arrancar.
+
+### Consulta de estado y salud
+Muestra el conteo de eventos (confirmados, vetados, pendientes), métricas de salud y los últimos eventos registrados:
+```bash
+./run.sh status
+# Opcional: especificar cuántos eventos mostrar
+./run.sh status --last 15
+```
+
+> **Nota sobre el subcomando `replay` (Prueba offline):** El subcomando `./run.sh replay` está programado para reproducir el benchmark offline `hour1` (60 disparos / 25 confirmados sin red). Sin embargo, requiere las trazas históricas `tests/fixtures/hour1_*.mseed` que no están incluidas en este repositorio. Para validar la instalación en este entorno use `./run.sh preflight`.
 
 ## 5. Visualizador Web Local
 
-Para monitorear las trazas en tiempo real y visualizar los eventos confirmados o vetados, inicie el servidor web interno:
+Inicia el servidor web local con control de caché:
 
 ```bash
-python3 -m http.server 8080 --directory software/viewer
+./run.sh viewer
+# Opcional: cambiar puerto o interfaz de red
+./run.sh viewer --port 8080 --host 127.0.0.1
 ```
 
 Acceda desde su navegador web en:
