@@ -66,39 +66,54 @@ El contenido se organiza bajo la siguiente estructura modular:
 
 ```text
 sismoclean/
+├── LICENSE                 # Licencia de código abierto MIT
 ├── README.md               # Este documento de presentación y guía técnica
 ├── .gitignore              # Reglas de exclusión para control de versiones git
+├── data/                   # Muestras de datos experimentales
+│   ├── processed/          # Series de tiempo y registros de eventos en formato CSV
+│   ├── raw/                # Trazas crudas en formato estándar MiniSEED (.mseed)
+│   └── README.md
 ├── docs/                   # Documentación técnica, manuales y arquitectura
 │   ├── ARQUITECTURA_PIPELINE.md
 │   └── MANUAL_OPERATIVO.md
-├── data/                   # Muestras de datos experimentales
-│   ├── raw/                # Trazas crudas en formato estándar MiniSEED (.mseed)
-│   ├── processed/          # Series de tiempo y registros de eventos en formato CSV
-│   └── README.md
-├── software/               # Código fuente del pipeline y scripts
-│   ├── src/vivo/           # Módulos Python del pipeline (adquisición, filtros, motor)
-│   ├── scripts/            # Diagnóstico de red, medición de retardo y utilidades
-│   ├── viewer/             # Aplicación web local (HTML5, JS y CSS)
-│   ├── config/             # Archivos de configuración YAML
-│   ├── systemd/            # Plantillas para ejecución continua como servicio Linux
-│   └── requirements.txt    # Lista de dependencias de Python
 ├── firmware/               # Documentación del sistema embebido de la estación
 │   └── README.md
 ├── hardware/               # Especificaciones mecánicas, sensores y base de montaje
-│   ├── README.md
-│   └── cad_3d/             # Carpeta de reserva para futuros diseños CAD y piezas 3D
-├── results/                # Figuras de validación y curvas de rendimiento
-│   ├── fig_kept_waveform.png
-│   ├── fig_veto_waveforms.png
-│   ├── fig_timeline.png
-│   ├── fig_confirmation.png
-│   ├── fig_status.png
+│   ├── cad_3d/             # Carpeta de reserva para futuros diseños CAD y piezas 3D
+│   │   └── README.md
 │   └── README.md
-└── media/                  # Material visual y gráficos comparativos
-    ├── 01_antes_y_despues_filtrado.png      # Señal y espectro antes vs después del filtro
-    ├── 02_deteccion_evento_sismico.png      # Registro de sismo real y razón STA/LTA
-    ├── 03_discriminacion_ruido_vs_sismo.png # Comparativa de sismo real vs falso disparo
-    └── README.md
+├── media/                  # Material visual y gráficos comparativos
+│   ├── 01_antes_y_despues_filtrado.png      # Señal y espectro antes vs después del filtro
+│   ├── 02_deteccion_evento_sismico.png      # Registro de sismo real y razón STA/LTA
+│   ├── 03_discriminacion_ruido_vs_sismo.png # Comparativa de sismo real vs falso disparo
+│   └── README.md
+├── results/                # Figuras de validación y curvas de rendimiento
+│   ├── fig_confirmation.png
+│   ├── fig_kept_waveform.png
+│   ├── fig_status.png
+│   ├── fig_timeline.png
+│   ├── fig_veto_waveforms.png
+│   └── README.md
+└── software/               # Código fuente del pipeline y scripts
+    ├── config/             # Archivos de configuración YAML
+    │   ├── config.example.yaml
+    │   └── config.yaml
+    ├── logs/               # Directorio de logs de ejecución (ignorado en git)
+    │   └── LEEME.txt
+    ├── scripts/            # Diagnóstico de red, medición de retardo y utilidades
+    │   ├── diagnostico_red.sh
+    │   ├── live_hybrid.py
+    │   ├── medir_retardo.py
+    │   └── rs_fdsn.py
+    ├── src/vivo/           # Módulos Python del pipeline (adquisición, filtros, motor)
+    ├── systemd/            # Plantillas para ejecución continua como servicio Linux
+    │   ├── vivo-v5.service.in
+    │   └── vivo-viewer.service.in
+    ├── viewer/             # Aplicación web local (HTML5, JS y CSS)
+    ├── install-systemd.sh  # Script de instalación de servicios systemd
+    ├── install.sh          # Script de instalación
+    ├── requirements.txt    # Lista de dependencias de Python
+    └── run.sh              # Lanzador principal del pipeline
 ```
 
 ---
@@ -248,6 +263,8 @@ phasenet:
 ---
 
 ## 7. Licencia y Créditos
+
+Este proyecto se distribuye bajo los términos de la Licencia MIT. Para más detalles, consulte el archivo [LICENSE](LICENSE).
 
 Desarrollo realizado en el Departamento de Física de la Universidad San Francisco de Quito (USFQ).
 

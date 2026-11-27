@@ -22,9 +22,12 @@ Comparativa fundamental del mecanismo de veto multi-estación:
 
 ## 2. Esquemas Técnicos y Validación
 
-- `fig_confirmation.png`: Balance estadístico de eventos confirmados mediante el clúster sismológico.
-- `fig_timeline.png`: Continuidad temporal de adquisición y control de paquetes en bloques de 30 segundos.
-- `fig_status.png`: Distribución porcentual entre eventos vetados (ruido local), pendientes de validación y sismos confirmados.
+Las figuras de validación del sistema y comparativas de formas de onda se encuentran centralizadas en el directorio [`../results/`](../results/):
+- `../results/fig_confirmation.png`: Balance estadístico de eventos confirmados mediante el clúster sismológico.
+- `../results/fig_kept_waveform.png`: Forma de onda de sismo real confirmado en las tres estaciones del clúster y aceleración triaxial.
+- `../results/fig_status.png`: Distribución porcentual entre eventos vetados (ruido local), pendientes de validación y sismos confirmados.
+- `../results/fig_timeline.png`: Continuidad temporal de adquisición y control de paquetes en bloques de 30 segundos.
+- `../results/fig_veto_waveforms.png`: Forma de onda de falso disparo por ruido local vetado.
 
 ## 3. Registro Fotográfico del Montaje
 
