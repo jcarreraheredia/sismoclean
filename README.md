@@ -102,7 +102,6 @@ sismoclean/
     │   └── LEEME.txt
     ├── scripts/            # Diagnóstico de red, medición de retardo y utilidades
     │   ├── diagnostico_red.sh
-    │   ├── live_hybrid.py
     │   ├── medir_retardo.py
     │   └── rs_fdsn.py
     ├── src/vivo/           # Módulos Python del pipeline (adquisición, filtros, motor)
@@ -142,7 +141,7 @@ pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
 
-> **Aclaración sobre `install.sh`:** El instalador `./install.sh` está diseñado para paquetes autocontenidos offline que asumen la presencia de carpetas locales `.python/` y `vendor/wheels/`. Al clonar este repositorio desde Git, dichos binarios pesados no están incluidos. Si se ejecuta `install.sh`, este detectará la ausencia del directorio de ruedas e intentará instalar desde Internet, pero fallará al no resolver `torch==2.2.2+cpu` en el índice estándar de PyPI si no se preinstala con `--index-url https://download.pytorch.org/whl/cpu`. Además, `install.sh` ejecuta al final una prueba de replay offline (`tests/fixtures/hour1_*.mseed`) que no está incluida en este repositorio. Por tanto, se recomienda la instalación manual mediante `venv` + `pip`.
+> **Aclaración sobre `install.sh`:** El instalador `./install.sh` está diseñado para paquetes autocontenidos offline que asumen la presencia de carpetas locales `.python/` y `vendor/wheels/`. Al clonar este repositorio desde Git, dichos binarios pesados no están incluidos. Si se ejecuta `install.sh`, este detectará la ausencia del directorio de ruedas e intentará instalar desde Internet, pero fallará al no resolver `torch==2.2.2+cpu` en el índice estándar de PyPI si no se preinstala con `--index-url https://download.pytorch.org/whl/cpu`. Asimismo, el replay offline requiere `tests/fixtures/hour1_*.mseed`, que no se incluyen en este repositorio; en ese caso `install.sh` muestra un AVISO y continúa sin interrumpirse, y puede omitirse con `./install.sh --no-preflight`. Por tanto, se recomienda la instalación manual mediante `venv` + `pip`.
 
 ### Paso 3: Configurar la IP del Raspberry Shake
 Configure la dirección IP asignada a su estación en la red local:
